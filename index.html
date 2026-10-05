@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Gerund & Infinitive Pro</title>
+    <style>
+        :root {
+            --bg-color: #f6f8fa;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --dark: #0f172a;
+            --border: #e2e8f0;
+            --star-color: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .tabs {
+            display: flex;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 15px;
+            gap: 5px;
+            background: #e2e8f0;
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.95rem;
+            background: transparent;
+            color: #64748b;
+            border-radius: 9px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--dark);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #theory-screen { display: none; }
+
+        .flashcard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .flashcard {
+            width: 100%;
+            min-height: 180px;
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .flashcard-text-wrapper {
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flashcard-translation {
+            font-size: 1.1rem;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .flashcard-verb-hint {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .dropdown-arrow {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            color: var(--primary);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            user-select: none;
+            background: #eef2f6;
+            width: 32px;
+            height: 32px;
+            line-height: 30px;
+            border-radius: 50%;
+            text-align: center;
+        }
+        
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .card-explanation-dropdown {
+            width: 100%;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border);
+            text-align: left;
+            display: none;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-rule-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            background: #fff;
+            padding: 10px;
+            border-left: 3px solid var(--warning);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            white-space: pre-line;
+            color: #334155;
+        }
+
+        .card-examples-wrapper h5 {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .card-example-item {
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-style: italic;
+            margin-bottom: 4px;
+            padding-left: 6px;
+            border-left: 2px solid var(--primary);
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .nav-card-btn {
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        .nav-card-btn:active { transform: scale(0.97); }
+
+        .btn-dont-know { background-color: var(--error); }
+        .btn-know { background-color: var(--success); }
+
+        .results-box {
+            display: none;
+            width: 100%;
+            background: #fff;
+            margin-top: 10px;
+        }
+        .results-box h2 {
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        .wrong-words-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            background: #f8fafc;
+            margin-bottom: 15px;
+        }
+        .wrong-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 1.05rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wrong-item:last-child { border-bottom: none; }
+        .wrong-verb { font-weight: bold; color: var(--dark); }
+        .wrong-hint { font-weight: 600; font-size: 0.85rem; margin-left: 8px; }
+        
+        .hint-gerund { color: #10b981; }
+        .hint-infinitive { color: #f59e0b; }
+        .hint-both { color: #4f46e5; }
+        
+        .restart-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+        }
+        header h1 { font-size: 1.25rem; color: var(--dark); font-weight: 700; }
+        .stats { display: flex; justify-content: space-between; font-size: 0.95rem; color: #64748b; margin-top: 5px; align-items: center; }
+        .stars-container { color: var(--star-color); font-size: 1.15rem; font-weight: bold; }
+        .quiz-box { min-height: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; margin-bottom: 20px; }
+        .verb-prompt { font-size: 2.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+        .verb-translation { font-size: 1.2rem; color: #64748b; margin-top: 4px; font-weight: 500; }
+        .instruction { font-size: 0.85rem; color: #94a3b8; margin-top: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        
+        button.action-btn { 
+            padding: 16px; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: background-color 0.2s, transform 0.1s; 
+            outline: none; 
+            -webkit-tap-highlight-color: transparent; 
+            color: white; 
+        }
+        button.action-btn:active { transform: scale(0.98); }
+        
+        .btn-gerund { background-color: #10b981; }
+        .btn-infinitive { background-color: var(--warning); }
+        .btn-both { background-color: var(--dark); }
+        .btn-next { background-color: var(--primary); display: none; margin-top: 10px; }
+        
+        .explanation-box { border-top: 1px solid var(--border); padding-top: 15px; margin-top: 5px; display: none; }
+        .result-status { font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; }
+        .status-correct { color: var(--success); text-align: center; width: 100%; display: block; margin-bottom: 10px; }
+        .status-incorrect { color: var(--error); }
+        .rule { font-size: 0.95rem; line-height: 1.45; background: #f8fafc; padding: 12px; border-left: 4px solid #cbd5e1; margin-bottom: 12px; border-radius: 0 8px 8px 0; white-space: pre-line; }
+        .examples h4 { font-size: 0.85rem; color: #64748b; margin-bottom: 6px; text-transform: uppercase; }
+        .example-item { font-size: 0.95rem; margin-bottom: 6px; line-height: 1.4; padding-left: 8px; border-left: 2px solid var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-trainer" onclick="switchScreen('trainer')">Тренажер</button>
+        <button class="tab-btn" id="tab-theory" onclick="switchScreen('theory')">Навчання</button>
+    </div>
+
+    <div class="container">
+        <!-- ЕКРАН ТРЕНАЖЕРА -->
+        <div id="trainer-screen">
+            <header>
+                <h1>Gerund / Infinitive / Both</h1>
+                <div class="stats">
+                    <span id="progress">Запитання: 0/0</span>
+                    <span id="stars-display" class="stars-container">⭐ 0</span>
+                </div>
+            </header>
+            <main>
+                <div class="quiz-box">
+                    <div class="verb-prompt" id="current-verb">...</div>
+                    <div class="verb-translation" id="current-translation">...</div>
+                    <div class="instruction">Оберіть правильний патерн</div>
+                </div>
+                
+                <div id="quick-correct-status" class="status-correct" style="display: none;"></div>
+
+                <div class="btn-grid">
+                    <button class="action-btn btn-gerund" id="choice-gerund" onclick="checkAnswer('gerund')">Gerund (-ing)</button>
+                    <button class="action-btn btn-infinitive" id="choice-infinitive" onclick="checkAnswer('infinitive')">Infinitive (to + V)</button>
+                    <button class="action-btn btn-both" id="choice-both" onclick="checkAnswer('both')">Both (Змінює зміст)</button>
+                    <button class="action-btn btn-next" id="next-btn" onclick="nextQuestion()">Наступне дієслово →</button>
+                </div>
+
+                <div class="explanation-box" id="explanation-box">
+                    <div class="result-status" id="result-status"></div>
+                    <div class="rule" id="explanation-rule"></div>
+                    <div class="examples">
+                        <h4>Контекстні приклади:</h4>
+                        <div id="examples-list"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- ЕКРАН НАВЧАННЯ -->
+        <div id="theory-screen">
+            <header>
+                <h1>Картки запам'ятовування</h1>
+            </header>
+            <div class="flashcard-container" id="flashcards-main-zone">
+                <div class="card-stats">
+                    <span id="card-progress">Картка: 0/0</span>
+                    <span id="card-known-count" style="color: var(--success);">Вивчено: 0</span>
+                </div>
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-text-wrapper" onclick="toggleCardDropdown()">
+                        <span id="card-verb-text">...</span>
+                        <span class="flashcard-translation" id="card-translation-text">...</span>
+                        <span class="flashcard-verb-hint" id="card-hint-text">...</span>
+                        <span class="dropdown-arrow" id="card-arrow" style="display: none;">↓</span>
+                    </div>
+                    <div class="card-explanation-dropdown" id="card-dropdown-content">
+                        <div class="card-rule-text" id="card-rule-output"></div>
+                        <div class="card-examples-wrapper">
+                            <h5>Приклади:</h5>
+                            <div id="card-examples-output"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-grid">
+                    <button class="nav-card-btn btn-dont-know" onclick="handleCardChoice('left')">← Не знаю</button>
+                    <button class="nav-card-btn btn-know" onclick="handleCardChoice('right')">Знаю →</button>
+                </div>
+            </div>
+            <div class="results-box" id="flashcards-results-zone">
+                <h2>Потрібно повторити (Не знаю):</h2>
+                <div class="wrong-words-list" id="wrong-words-output"></div>
+                <button class="restart-btn" onclick="initTheory()">Пройти навчання заново ↻</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const db = [
+            // BOTH
+            { verb: "remember", trans: "пам'ятати", type: "both", hint: "(to / -ing)", rule: "• + Gerund: Пам'ятати про те, що ВИ ВЖЕ ЗРОБИЛИ в минулому.\n• + Infinitive: Пам'ятати, що ЩЕ ТРЕБА ЗРОБИТИ (обов'язок).", ex: ["I remember locking the door.", "Please remember to lock the door."] },
+            { verb: "forget", trans: "забувати", type: "both", hint: "(to / -ing)", rule: "• + Gerund: Забути сам спогад про подію з минулого.\n• + Infinitive: Забути виконати заплановану справу.", ex: ["I'll never forget travelling to Paris.", "Don't forget to buy milk."] },
+            { verb: "stop", trans: "зупинятися, припиняти", type: "both", hint: "(to / -ing)", rule: "• + Gerund: Повністю припинити сам процес дії (кинути заняття).\n• + Infinitive: Зробити фізичну паузу в дорозі ЗАДЛЯ іншої мети.", ex: ["He stopped smoking.", "He stopped to smoke a cigarette."] },
+            { verb: "try", trans: "намагатися, пробувати", type: "both", hint: "(to / -ing)", rule: "• + Gerund: Зробити щось як експеримент (спробувати, щоб побачити чи допоможе).\n• + Infinitive: Докладати великих зусиль, намагатися подолати труднощі.", ex: ["Try adding some salt to the soup.", "I tried to lift this heavy box."] },
+            { verb: "regret", trans: "шкодувати", type: "both", hint: "(to / -ing)", rule: "• + Gerund: Шкодувати про помилку, яку вчинили в минулому.\n• + Infinitive: Формальний зворот ввічливості перед повідомленням поганих новин.", ex: ["I regret saying that to her.", "We regret to inform you that your flight is delayed."] },
+            
+            // GERUND
+            { verb: "enjoy", trans: "насолоджуватися", type: "gerund", hint: "(-ing)", rule: "Дієслово вираження симпатії чи емоцій. Після нього традиційно описується сам процес через герундій.", ex: ["I enjoy swimming in the pool."] },
+            { verb: "fancy", trans: "хотіти, бажати", type: "gerund", hint: "(-ing)", rule: "Розмовний синонім до 'хотіти'. Завжди вимагає герундій при вказуванні дії.", ex: ["Do you fancy going out tonight?"] },
+            { verb: "discuss", trans: "обговорювати", type: "gerund", hint: "(-ing)", rule: "Обговорення завжди спрямоване на поточний або минулий процес, тому використовується герундій.", ex: ["We discussed opening a new store."] },
+            { verb: "dislike", trans: "не любити", type: "gerund", hint: "(-ing)", rule: "Дієслово антипатії. Ставлення до певного процесу в цілому вимагає суфікса -ing.", ex: ["I dislike waking up early."] },
+            { verb: "finish", trans: "закінчувати", type: "gerund", hint: "(-ing)", rule: "Дієслова фази дії (початок, продовження або завершення процесу) зазвичай вимагають герундій.", ex: ["Have you finished writing the essay?"] },
+            { verb: "mind", trans: "заперечувати", type: "gerund", hint: "(-ing)", rule: "Вживається у питаннях та запереченнях ('бути проти'). Потребує після себе герундій.", ex: ["Would you mind closing the window?"] },
+            { verb: "suggest", trans: "пропонувати (ідею)", type: "gerund", hint: "(-ing)", rule: "Пропозиція абстрактної ідеї або спільної дії завжди оформлюється через герундій.", ex: ["She suggested going to the cinema."] },
+            { verb: "recommend", trans: "рекомендувати", type: "gerund", hint: "(-ing)", rule: "Рекомендація процесу чи дії будується суворо з герундієм (якщо немає вказівки на особу).", ex: ["I recommend visiting this museum."] },
+            { verb: "keep", trans: "продовжувати робити", type: "gerund", hint: "(-ing)", rule: "Дієслово фази дії, означає безперервне повторення процесу. Завжди герундій.", ex: ["Keep moving forward!"] },
+            { verb: "avoid", trans: "уникати", type: "gerund", hint: "(-ing)", rule: "Ухилення від процесу чи певної дії логічно пов'язується з формою герундія.", ex: ["You should avoid driving in the rush hour."] },
+            { verb: "miss", trans: "сумувати, пропускати", type: "gerund", hint: "(-ing)", rule: "Сумувати за певним заняттям або втратити можливість щось зробити — герундій.", ex: ["I miss living near the beach."] },
+            { verb: "appreciate", trans: "цінувати, бути вдячним", type: "gerund", hint: "(-ing)", rule: "Вдячність за надану послугу або виконану дію виражається через герундій.", ex: ["I appreciate your helping me."] },
+            { verb: "delay", trans: "затримувати, відкладати", type: "gerund", hint: "(-ing)", rule: "Перенесення термінів виконання процесу вимагає після себе герундіальну форму.", ex: ["Why do you delay replying to the mail?"] },
+            { verb: "postpone", trans: "відкладати (на потім)", type: "gerund", hint: "(-ing)", rule: "Офіційний синонім до delay. Дія, виконання якої переноситься, вживається з -ing.", ex: ["They postponed holding the meeting."] },
+            { verb: "practise", trans: "практикуватися", type: "gerund", hint: "(-ing)", rule: "Тренування конкретної навички — це завжди занурення в процес, тому потрібен герундій.", ex: ["You need to practise speaking English."] },
+            { verb: "consider", trans: "розглядати, обмірковувати", type: "gerund", hint: "(-ing)", rule: "Дієслово розумової діяльності, спрямоване на оцінку варіанту дії — герундій.", ex: ["I am considering buying a new phone."] },
+            { verb: "can't stand", trans: "терпіти не могти", type: "gerund", hint: "(-ing)", rule: "Стала ідіома крайнього роздратування процесом. Потребує тільки герундій.", ex: ["I can't stand waiting in lines."] },
+            { verb: "can't help", trans: "не могти втриматися", type: "gerund", hint: "(-ing)", rule: "Ідіома: 'Нічого не можу з собою вдіяти, окрім як...'. Вживається лише з герундієм.", ex: ["I can't help laughing at his jokes."] },
+            { verb: "risk", trans: "ризикувати", type: "gerund", hint: "(-ing)", rule: "Ризик пов'язаний із можливістю постраждати під час якогось процесу — ставимо герундій.", ex: ["He risked losing all his money."] },
+            { verb: "admit", trans: "визнавати", type: "gerund", hint: "(-ing)", rule: "Визнання факту вчинення якоїсь дії (часто в минулому) вимагає герундія.", ex: ["She admitted breaking the vase."] },
+            { verb: "deny", trans: "заперечувати", type: "gerund", hint: "(-ing)", rule: "Антонім до admit. Заперечення своєї причетності до певної дії оформлюється через герундій.", ex: ["He denied stealing the wallet."] },
+            { verb: "mention", trans: "згадувати", type: "gerund", hint: "(-ing)", rule: "Коротке згадування факту або процесу в розмові вимагає вживання герундія.", ex: ["He mentioned going to the party."] },
+            { verb: "imagine", trans: "уявляти", type: "gerund", hint: "(-ing)", rule: "Візуалізація процесу в думках. Картинка дії завжди передається через -ing.", ex: ["Can you imagine living on Mars?"] },
+            { verb: "tolerate", trans: "терпіти, виносити", type: "gerund", hint: "(-ing)", rule: "Терпіти або спокійно ставитися до чужої поведінки чи процесу — герундій.", ex: ["We won't tolerate cheating during tests."] },
+            { verb: "understand", trans: "розуміти", type: "gerund", hint: "(-ing)", rule: "Розуміння причин або суті конкретного процесу вимагає форми герундія.", ex: ["I understand your wanting to leave."] },
+            { verb: "involve", trans: "передбачати, залучати", type: "gerund", hint: "(-ing)", rule: "Якщо ситуація або робота включає в себе певні процеси, вони пишуться з -ing.", ex: ["The job involves travelling a lot."] },
+            { verb: "complete", trans: "завершувати", type: "gerund", hint: "(-ing)", rule: "Синонім до finish. Остаточне завершення роботи над процесом — герундій.", ex: ["He completed renovating the kitchen."] },
+            { verb: "report", trans: "повідомляти, доповідати", type: "gerund", hint: "(-ing)", rule: "Офіційна доповідь про вчинену раніше дію чи інцидент будується з герундієм.", ex: ["They reported seeing a strange light."] },
+            { verb: "anticipate", trans: "передбачати, очікувати", type: "gerund", hint: "(-ing)", rule: "Уявне передчуття майбутнього процесу або події вимагає герундіальної форми.", ex: ["We anticipate having a good time."] },
+            { verb: "recall", trans: "пригадувати", type: "gerund", hint: "(-ing)", rule: "Відтворення в пам'яті минулого досвіду чи картинки процесу — завжди герундій.", ex: ["I recall meeting him years ago."] },
+
+            // INFINITIVE
+            { verb: "agree", trans: "погоджуватися", type: "infinitive", hint: "(to)", rule: "Дієслово волевиявлення. Згода виконати майбутню дію завжди вимагає інфінітив з to.", ex: ["They agreed to sign the contract."] },
+            { verb: "ask*", trans: "просити / запитувати", type: "infinitive", hint: "(to)", rule: "Прохання про виконання дії спрямоване в майбутнє. Потрібен інфінітив.", ex: ["He asked to leave early."] },
+            { verb: "decide", trans: "вирішувати", type: "infinitive", hint: "(to)", rule: "Прийняття рішення зробити щось у майбутньому — класичний тригер для інфінітива.", ex: ["We decided to buy a car."] },
+            { verb: "help*", trans: "допомагати", type: "infinitive", hint: "(to)", rule: "Допомога у виконанні запланованої дії. Допускається з часткою 'to' або без неї (bare infinitive).", ex: ["She helped to clean the room."] },
+            { verb: "plan", trans: "планувати", type: "infinitive", hint: "(to)", rule: "Планування кроків на майбутнє логічно вимагає цільового інфінітива.", ex: ["I plan to change my job next year."] },
+            { verb: "hope", trans: "сподіватися", type: "infinitive", hint: "(to)", rule: "Сподівання завжди спрямоване вперед у часі, тому після нього вживається інфінітив.", ex: ["We hope to see you soon."] },
+            { verb: "learn", trans: "вчитися", type: "infinitive", hint: "(to)", rule: "Навчання з метою опанувати вміння робити щось у перспективі — інфінітив.", ex: ["Children learn to walk early."] },
+            { verb: "want*", trans: "хотіти", type: "infinitive", hint: "(to)", rule: "Базове бажання виконати дію. Завжди вимагає інфінітивну зв'язку 'want to V'.", ex: ["I want to sleep."] },
+            { verb: "would like*", trans: "хотів би", type: "infinitive", hint: "(to)", rule: "Ввічлива форма вираження бажання. Конструкції з 'would' суворо вимагають інфінітив.", ex: ["I would like to order food."] },
+            { verb: "promise", trans: "обіцяти", type: "infinitive", hint: "(to)", rule: "Обіцянка виконати зобов'язання в майбутньому — виключно інфінітивна структура.", ex: ["He promised to call me."] },
+            { verb: "can afford", trans: "дозволити собі", type: "infinitive", hint: "(to)", rule: "Наявність фінансових чи часових ресурсів для здійснення дії — інфінітив.", ex: ["I can't afford to buy this laptop."] },
+            { verb: "manage", trans: "вдаватися, справлятися", type: "infinitive", hint: "(to)", rule: "Досягнення конкретної мети, успішне подолання завдання — пишеться через 'to'.", ex: ["We managed to catch the train."] },
+            { verb: "prepare*", trans: "готуватися", type: "infinitive", hint: "(to)", rule: "Підготовка до певної цільової дії попереду вимагає використання інфінітива.", ex: ["They are preparing to leave."] },
+            { verb: "demand", trans: "вимагати", type: "infinitive", hint: "(to)", rule: "Категорична вимога вчинити певну дію — інфінітив.", ex: ["He demanded to speak to the manager."] },
+            { verb: "choose", trans: "вибирати", type: "infinitive", hint: "(to)", rule: "Вибір однієї альтернативи дії з кількох можливих — ставиться інфінітив.", ex: ["I chose not to go there."] },
+            { verb: "offer", trans: "пропонувати (допомогу)", type: "infinitive", hint: "(to)", rule: "Вираження готовності самому зробити щось для когось — завжди інфінітив.", ex: ["He offered to carry my bag."] },
+            { verb: "wait", trans: "чекати", type: "infinitive", hint: "(to)", rule: "Очікування моменту, щоб виконати дію — класичний цільовий інфинітив.", ex: ["I am waiting to hear from you."] },
+            { verb: "would hate*", trans: "дуже не хотів би", type: "infinitive", hint: "(to)", rule: "Будь-яка конструкція 'would + дієслово почуття' автоматично забирає собі інфінітив.", ex: ["I would hate to miss the flight."] },
+            { verb: "would love*", trans: "дуже хотів би", type: "infinitive", hint: "(to)", rule: "Посилена ввічлива форма бажання з елементом 'would' — тільки інфінітив.", ex: ["I would love to visit Japan."] },
+            { verb: "seem", trans: "здаватися", type: "infinitive", hint: "(to)", rule: "Суб'єктивне враження про стан або дію. Обов'язковий інфінітив.", ex: ["You seem to be tired today."] },
+            { verb: "expect*", trans: "очікувати", type: "infinitive", hint: "(to)", rule: "Припущення, що хтось виконає або має відбутися дія в майбутньому — інфінітив.", ex: ["We expect to finish by Friday."] },
+            { verb: "intend", trans: "мати намір", type: "infinitive", hint: "(to)", rule: "Наявність чіткого наміру або плану на майбутню дію — пишеться з 'to'.", ex: ["I intend to study tonight."] },
+            { verb: "pretend", trans: "прикидатися", type: "infinitive", hint: "(to)", rule: "Імітація виконання дії, якої насправді немає — інфінітив.", ex: ["He pretended to be asleep."] },
+            { verb: "refuse", trans: "відмовлятися", type: "infinitive", hint: "(to)", rule: "Категорична відмова виконувати дію — антонім до agree, вимагає інфінітив.", ex: ["She refused to answer the question."] },
+            { verb: "tend", trans: "мати схильність", type: "infinitive", hint: "(to)", rule: "Регулярно повторювана схильність до певної поведінки чи дії — інфінітив.", ex: ["Prices tend to rise in winter."] },
+            { verb: "would prefer*", trans: "віддав би перевагу", type: "infinitive", hint: "(to)", rule: "Знову зв'язка з 'would'. Вираження конкретної переваги в моменті — інфінітив.", ex: ["I would prefer to stay at home."] },
+            { verb: "deserve", trans: "заслуговувати", type: "infinitive", hint: "(to)", rule: "Право на отримання нагороди чи покарання за дії — суворо 'deserve to V'.", ex: ["He deserves to win this race."] },
+            { verb: "appear", trans: "здаватися, виявлятися", type: "infinitive", hint: "(to)", rule: "У значенні 'справляти враження, здаватися' повністю копіює логіку дієслова seem.", ex: ["She appears to know the answer."] },
+            { verb: "arrange", trans: "організовувати, домовлятися", type: "infinitive", hint: "(to)", rule: "Попередня організація або планування домовленостей на майбутнє — інфінітив.", ex: ["I arranged to meet them at six."] },
+            { verb: "claim", trans: "заявляти, стверджувати", type: "infinitive", hint: "(to)", rule: "Утвердження, заява про своє право або про те, що дія вже виконана — інфінітив.", ex: ["He claims to be an expert."] }
+        ];
+
+        let quizQueue = []; let currentQuestionIndex = 0; let starCount = 0; let hasAnswered = false;
+        let theoryQueue = []; let currentCardIndex = 0; let knownCount = 0; let dontKnowList = [];
+        let audioCtx = null;
+
+        function playSound(type) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                if (type === 'correct') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'incorrect') {
+                    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(95, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+                }
+            } catch (e) {}
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initTheory() {
+            theoryQueue = shuffle([...db]); currentCardIndex = 0; knownCount = 0; dontKnowList = [];
+            document.getElementById('flashcards-main-zone').style.display = 'flex';
+            document.getElementById('flashcards-results-zone').style.display = 'none';
+            updateKnownDisplay(); showCard();
+        }
+
+        function showCard() {
+            if (currentCardIndex >= theoryQueue.length) { finishTheorySession(); return; }
+            const card = theoryQueue[currentCardIndex];
+            document.getElementById('card-verb-text').innerText = card.verb;
+            document.getElementById('card-translation-text').innerText = `[${card.trans}]`;
+            document.getElementById('card-hint-text').innerText = ' ' + card.hint;
+            document.getElementById('card-progress').innerText = `Картка: ${currentCardIndex + 1}/${theoryQueue.length}`;
+            
+            const dropdown = document.getElementById('card-dropdown-content');
+            dropdown.style.display = 'block'; 
+            
+            document.getElementById('card-rule-output').innerText = card.rule;
+            const examplesContainer = document.getElementById('card-examples-output');
+            examplesContainer.innerHTML = '';
+            card.ex.forEach(ex => {
+                const div = document.createElement('div'); div.className = 'card-example-item'; div.innerText = ex;
+                examplesContainer.appendChild(div);
+            });
+        }
+
+        function handleCardChoice(direction) {
+            if (currentCardIndex >= theoryQueue.length) return;
+            const currentCard = theoryQueue[currentCardIndex];
+            if (direction === 'right') { knownCount++; updateKnownDisplay(); } 
+            else if (direction === 'left') { dontKnowList.push(currentCard); }
+            currentCardIndex++; showCard();
+        }
+
+        function updateKnownDisplay() { document.getElementById('card-known-count').innerText = `Вивчено: ${knownCount}`; }
+
+        function finishTheorySession() {
+            document.getElementById('flashcards-main-zone').style.display = 'none';
+            document.getElementById('flashcards-results-zone').style.display = 'block';
+            const output = document.getElementById('wrong-words-output'); output.innerHTML = '';
+            if (dontKnowList.length === 0) {
+                output.innerHTML = '<div style="padding: 15px; text-align: center; color: var(--success); font-weight: bold;">🎉 Чудовий результат! Усі дієслова вивчено!</div>';
+            } else {
+                dontKnowList.forEach(item => {
+                    let hintClass = item.type === 'gerund' ? 'hint-gerund' : (item.type === 'infinitive' ? 'hint-infinitive' : 'hint-both');
+                    const div = document.createElement('div'); div.className = 'wrong-item';
+                    div.innerHTML = `<span class="wrong-verb">${item.verb} <span style="font-weight:normal; color:#64748b; font-size:0.9rem;">— ${item.trans}</span></span><span class="wrong-hint ${hintClass}">${item.hint}</span>`;
+                    output.appendChild(div);
+                });
+            }
+        }
+
+        function switchScreen(screen) {
+            if (screen === 'trainer') {
+                document.getElementById('trainer-screen').style.display = 'block'; document.getElementById('theory-screen').style.display = 'none';
+                document.getElementById('tab-trainer').classList.add('active'); document.getElementById('tab-theory').classList.remove('active');
+            } else {
+                document.getElementById('trainer-screen').style.display = 'none'; document.getElementById('theory-screen').style.display = 'block';
+                document.getElementById('tab-trainer').classList.remove('active'); document.getElementById('tab-theory').classList.add('active');
+                if (theoryQueue.length === 0) initTheory();
+            }
+        }
+
+        function initTrainer() { quizQueue = shuffle([...db]); currentQuestionIndex = 0; document.getElementById('stars-display').innerText = `⭐ ${starCount}`; showQuestion(); }
+
+        function showQuestion() {
+            hasAnswered = false; 
+            document.getElementById('explanation-box').style.display = 'none'; 
+            document.getElementById('quick-correct-status').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            toggleChoiceButtons(true);
+            if (currentQuestionIndex >= quizQueue.length) { alert(`Раунд завершено! Зірок зібрано: ${starCount}`); initTrainer(); return; }
+            const current = quizQueue[currentQuestionIndex]; 
+            document.getElementById('current-verb').innerText = current.verb;
+            document.getElementById('current-translation').innerText = current.trans;
+            document.getElementById('progress').innerText = `Дієслово: ${currentQuestionIndex + 1}/${quizQueue.length}`;
+        }
+
+        function toggleChoiceButtons(show) {
+            const style = show ? 'block' : 'none';
+            document.getElementById('choice-gerund').style.display = style;
+            document.getElementById('choice-infinitive').style.display = style;
+            document.getElementById('choice-both').style.display = style;
+        }
+
+        function checkAnswer(userChoice) {
+            if (hasAnswered) return; hasAnswered = true;
+            const current = quizQueue[currentQuestionIndex]; const isCorrect = userChoice === current.type;
+            
+            toggleChoiceButtons(false);
+            document.getElementById('next-btn').style.display = 'block';
+
+            if (isCorrect) { 
+                starCount += 1; 
+                playSound('correct'); 
+                const quickCorrect = document.getElementById('quick-correct-status');
+                quickCorrect.innerHTML = '✓ Правильно! +1 ⭐';
+                quickCorrect.style.display = 'block';
+            } else { 
+                playSound('incorrect'); 
+                let correctLabel = current.type === 'both' ? 'Both (Обидва варіанти)' : (current.type === 'gerund' ? 'Gerund (-ing)' : 'Infinitive (to + V)'); 
+                
+                const statusBox = document.getElementById('result-status');
+                statusBox.innerHTML = `<span class="status-incorrect">✗ Помилка. Відповідь: ${correctLabel}</span>`;
+                
+                document.getElementById('explanation-rule').innerText = current.rule;
+                
+                const list = document.getElementById('examples-list'); list.innerHTML = '';
+                current.ex.forEach(ex => { const item = document.createElement('div'); item.className = 'example-item'; item.innerText = ex; list.appendChild(item); });
+                
+                document.getElementById('explanation-box').style.display = 'block'; 
+            }
+            document.getElementById('stars-display').innerText = `⭐ ${starCount}`;
+        }
+
+        function nextQuestion() { currentQuestionIndex++; showQuestion(); }
+        window.onload = () => { initTrainer(); initTheory(); };
+    </script>
+</body>
+</html>
